@@ -1,17 +1,9 @@
 <?php
-// Function to get headers when getallheaders() is unavailable
-if (!function_exists('getallheaders')) {
-    function getallheaders() {
-        $headers = [];
-        foreach ($_SERVER as $name => $value) {
-            if (substr($name, 0, 5) == 'HTTP_') {
-                $headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
-                $headers[$headerName] = $value;
-            }
-        }
-        return $headers;
-    }
-}
+// Manually setting the headers (you may replace this with real headers from your environment)
+$headers = [
+    "Content-Type: application/json", // Example header, adjust as needed
+    // Add more headers if required
+];
 
 // Target URL where you want to forward the POST request
 $targetUrl = "https://orange-invention-jj56g97qp6gg3q9vj-7569.app.github.dev/api/messages";
@@ -22,21 +14,11 @@ $ch = curl_init($targetUrl);
 // Retrieve POST data
 $postData = file_get_contents('php://input'); // Get raw POST data
 
-// Get the incoming headers
-$headers = getallheaders();
-unset($headers['Host']); // Remove Host header if present, as it is not needed
-
 // Prepare cURL options
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $postData); // Forward the raw POST data
-curl_setopt($ch, CURLOPT_HTTPHEADER, array_map(
-    function ($key, $value) {
-        return "$key: $value";
-    },
-    array_keys($headers),
-    $headers
-));
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers); // Use manually set headers
 
 // Execute the POST request and capture the response
 $response = curl_exec($ch);
