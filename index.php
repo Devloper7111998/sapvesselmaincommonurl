@@ -1,10 +1,19 @@
 <?php
+// Function to get headers when getallheaders() is unavailable
+if (!function_exists('getallheaders')) {
+    function getallheaders() {
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                $headers[$headerName] = $value;
+            }
+        }
+        return $headers;
+    }
+}
+
 // Target URL where you want to forward the POST request
-//$targetUrl = "https://sap-ticket-tracker-bot.vercel.app/api/messages";
-
-//$targetUrl = "https://sap-ticket-tracker-bot.onrender.com/api/messages";
-
-//test
 $targetUrl = "https://orange-invention-jj56g97qp6gg3q9vj-7569.app.github.dev/api/messages";
 
 // Initialize cURL session
